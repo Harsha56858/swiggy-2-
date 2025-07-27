@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Gateway - YummyBite</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .payment-container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    .payment-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .payment-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .payment-subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .order-summary {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .summary-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      color: #666;
+    }
+    
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 18px;
+      color: #333;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+    }
+    
+    .payment-methods {
+      margin-bottom: 30px;
+    }
+    
+    .method-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .payment-option {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .payment-option:hover {
+      border-color: #ff385c;
+      background: #fff5f5;
+    }
+    
+    .payment-option.selected {
+      border-color: #ff385c;
+      background: #fff5f5;
+    }
+    
+    .payment-icon {
+      width: 40px;
+      height: 40px;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    
+    .payment-details {
+      flex: 1;
+    }
+    
+    .payment-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .payment-desc {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .upi-details {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .upi-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .upi-id {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ff385c;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: white;
+      border-radius: 6px;
+      border: 2px dashed #ff385c;
+    }
+    
+    .upi-copy {
+      background: #ff385c;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+    .upi-copy:hover {
+      background: #e0314f;
+    }
+    
+    .payment-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .btn-pay {
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-phonepe {
+      background: #5f259f;
+      color: white;
+    }
+    
+    .btn-phonepe:hover {
+      background: #4a1d7a;
+    }
+    
+    .btn-gpay {
+      background: #4285f4;
+      color: white;
+    }
+    
+    .btn-gpay:hover {
+      background: #3367d6;
+    }
+    
+    .btn-paytm {
+      background: #00b9f1;
+      color: white;
+    }
+    
+    .btn-paytm:hover {
+      background: #0099cc;
+    }
+    
+    .btn-other {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-other:hover {
+      background: #5a6268;
+    }
+    
+    .btn-cancel {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    .btn-cancel:hover {
+      background: #c82333;
+    }
+    
+    .payment-instructions {
+      background: #e7f3ff;
+      border: 1px solid #b3d9ff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .instructions-title {
+      font-weight: 600;
+      color: #0066cc;
+      margin-bottom: 10px;
+    }
+    
+    .instructions-list {
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    .instructions-list li {
+      margin-bottom: 8px;
+    }
+    
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    
+    @media (max-width: 768px) {
+      .payment-container {
+        margin: 20px;
+        padding: 20px;
+      }
+      
+      .payment-buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="window.history.back()">←</button>
+  
+  <div class="payment-container">
+    <div class="payment-header">
+      <h1 class="payment-title">Complete Payment</h1>
+      <p class="payment-subtitle">Choose your preferred payment method</p>
+    </div>
+    
+    <!-- Order Summary -->
+    <div class="order-summary">
+      <h3 class="summary-title">Order Summary</h3>
+      <div id="order-items">
+        <!-- Order items will be loaded here -->
+      </div>
+      <div class="summary-total">
+        <span>Total Amount:</span>
+        <span id="total-amount">₹0</span>
+      </div>
+    </div>
+    
+    <!-- UPI Details -->
+    <div class="upi-details">
+      <div class="upi-title">Pay to Website Owner</div>
+      <div class="upi-id" id="upi-id">6305974808@ibl</div>
+      <button class="upi-copy" onclick="copyUpiId()">Copy UPI ID</button>
+    </div>
+    
+    <!-- Payment Instructions -->
+    <div class="payment-instructions">
+      <div class="instructions-title">How to Pay:</div>
+      <ol class="instructions-list">
+        <li>Click on your preferred UPI app below</li>
+        <li>Enter the UPI ID: <strong>6305974808@ibl</strong></li>
+        <li>Enter the amount: <strong id="payment-amount">₹0</strong></li>
+        <li>Add a note: "YummyBite Order"</li>
+        <li>Complete the payment</li>
+        <li>Take a screenshot of the payment confirmation</li>
+      </ol>
+    </div>
+    
+    <!-- Payment Methods -->
+    <div class="payment-methods">
+      <h3 class="method-title">Choose Payment App</h3>
+      
+      <div class="payment-buttons">
+        <a href="#" class="btn-pay btn-phonepe" onclick="openPhonePe()">
+          <span style="margin-right: 8px;">📱</span>
+          PhonePe
+        </a>
+        <a href="#" class="btn-pay btn-gpay" onclick="openGooglePay()">
+          <span style="margin-right: 8px;">💳</span>
+          Google Pay
+        </a>
+        <a href="#" class="btn-pay btn-paytm" onclick="openPaytm()">
+          <span style="margin-right: 8px;">💰</span>
+          Paytm
+        </a>
+        <a href="#" class="btn-pay btn-other" onclick="openOtherUpi()">
+          <span style="margin-right: 8px;">🏦</span>
+          Other UPI Apps
+        </a>
+      </div>
+    </div>
+    
+    <!-- Payment Confirmation -->
+    <div class="payment-instructions" id="payment-confirmation" style="display: none;">
+      <div class="instructions-title">Payment Confirmation</div>
+      <p>After completing the payment, please:</p>
+      <ol class="instructions-list">
+        <li>Take a screenshot of the payment confirmation</li>
+        <li>Click the button below to confirm your order</li>
+        <li>We'll verify your payment and process your order</li>
+      </ol>
+      <button class="btn-save" onclick="confirmPayment()" style="margin-top: 15px;">Confirm Payment & Place Order</button>
+    </div>
+    
+    <button class="btn-cancel" onclick="cancelPayment()">Cancel Payment</button>
+  </div>
+
+  <script>
+    let orderData = {};
+    let selectedPaymentMethod = '';
+    
+    // Load order data from URL parameters
+    function loadOrderData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderItems = urlParams.get('items');
+      const total = urlParams.get('total');
+      const restaurantName = urlParams.get('restaurant');
+      
+      if (orderItems && total) {
+        orderData = {
+          items: JSON.parse(decodeURIComponent(orderItems)),
+          total: total,
+          restaurantName: restaurantName || 'Restaurant'
+        };
+        
+        displayOrderSummary();
+      } else {
+        alert('No order data found!');
+        window.location.href = 'main.html';
+      }
+    }
+    
+    // Display order summary
+    function displayOrderSummary() {
+      const orderItemsContainer = document.getElementById('order-items');
+      const totalAmount = document.getElementById('total-amount');
+      const paymentAmount = document.getElementById('payment-amount');
+      
+      // Display items
+      orderItemsContainer.innerHTML = orderData.items.map(item => `
+        <div class="summary-item">
+          <span>${item.name}</span>
+          <span>₹${item.price}</span>
+        </div>
+      `).join('');
+      
+      // Display total
+      totalAmount.textContent = `₹${orderData.total}`;
+      paymentAmount.textContent = `₹${orderData.total}`;
+    }
+    
+    // Copy UPI ID
+    function copyUpiId() {
+      const upiId = document.getElementById('upi-id').textContent;
+      navigator.clipboard.writeText(upiId).then(() => {
+        alert('UPI ID copied to clipboard!');
+      }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = upiId;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('UPI ID copied to clipboard!');
+      });
+    }
+    
+    // Open PhonePe app with proper deep linking
+    function openPhonePe() {
+      const amount = orderData.total;
+      const upiId = '6305974808@ibl';
+      const note = 'YummyBite Order';
+      
+      // PhonePe deep link formats
+      const phonepeUrls = [
+        `phonepe://pay?pa=${upiId}&pn=YummyBite&am=${amount}&tn=${note}&cu=INR`,
+        `upi://pay?pa=${upiId}&pn=YummyBite&am=${amount}&tn=${note}&cu=INR&app=phonepe`,
+        `upi://pay?pa=${upiId}&pn=YummyBite&am=${amount}&tn=${note}`
+      ];
+      
+      // Try multiple deep link formats
+      tryOpenApp(phonepeUrls, 'PhonePe', 'https://play.google.com/store/apps/details?id=com.phonepe.app');
+    }
+    
+    // Open Google Pay app with proper deep linking
+    function openGooglePay() {
+      const amount = orderData.total;
+      const upiId = '6305974808@ibl';
+      const note = 'YummyBite Order';
+      
+      // Google Pay deep link formats
+      const gpayUrls = [
+        `gpay://upi/pay?pa=${upiId}&pn=YummyBite&am=${amount}&tn=${note}&cu=INR`,
+        `upi://pay?pa=${upiId}&pn=YummyBite&am=${amount}&tn=${note}&cu=INR&app=gpay`,
+        `upi://pay?pa=${upiId}&pn=YummyBite&am=${amount}&tn=${note}`
+      ];
+      
+      // Try multiple deep link formats
+      tryOpenApp(gpayUrls, 'Google Pay', 'https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user');
+    }
+    
+    // Open Paytm app with proper deep linking
+    function openPaytm() {
+      const amount = orderData.total;
+      const upiId = '6305974808@ibl';
+      const note = 'YummyBite Order';
+      
+      // Paytm deep link formats
+      const paytmUrls = [
+        `paytmmp://pay?pa=${upiId}&pn=YummyBite&am=${amount}&tn=${note}&cu=INR`,
+        `upi://pay?pa=${upiId}&pn=YummyBite&am=${amount}&tn=${note}&cu=INR&app=paytm`,
+        `upi://pay?pa=${upiId}&pn=YummyBite&am=${amount}&tn=${note}`
+      ];
+      
+      // Try multiple deep link formats
+      tryOpenApp(paytmUrls, 'Paytm', 'https://play.google.com/store/apps/details?id=net.one97.paytm');
+    }
+    
+    // Open other UPI apps with proper deep linking
+    function openOtherUpi() {
+      const amount = orderData.total;
+      const upiId = '6305974808@ibl';
+      const note = 'YummyBite Order';
+      
+      // Generic UPI deep link formats
+      const upiUrls = [
+        `upi://pay?pa=${upiId}&pn=YummyBite&am=${amount}&tn=${note}&cu=INR`,
+        `intent://pay?pa=${upiId}&pn=YummyBite&am=${amount}&tn=${note}&cu=INR#Intent;scheme=upi;package=;end`,
+        `upi://${upiId}?am=${amount}&tn=${note}&cu=INR`
+      ];
+      
+      // Try multiple deep link formats
+      tryOpenApp(upiUrls, 'UPI App', null);
+    }
+    
+    // Smart app opening with fallbacks
+    function tryOpenApp(urls, appName, playStoreUrl) {
+      let currentIndex = 0;
+      
+      function tryNextUrl() {
+        if (currentIndex >= urls.length) {
+          // All URLs failed, show fallback
+          if (playStoreUrl) {
+            if (confirm(`${appName} app not found. Would you like to install it?`)) {
+              window.open(playStoreUrl, '_blank');
+            }
+          } else {
+            alert(`Please open your preferred UPI app and pay to: 6305974808@ibl\nAmount: ₹${orderData.total}\nNote: YummyBite Order`);
+          }
+          return;
+        }
+        
+        const url = urls[currentIndex];
+        currentIndex++;
+        
+        // Try to open the app
+        const link = document.createElement('a');
+        link.href = url;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Check if app opened after a short delay
+        setTimeout(() => {
+          // If we're still on the same page, try the next URL
+          if (document.hidden || document.webkitHidden) {
+            // App might have opened, don't try more URLs
+            return;
+          }
+          tryNextUrl();
+        }, 1500);
+      }
+      
+      tryNextUrl();
+      
+      // Show payment confirmation section after a delay
+      setTimeout(() => {
+        document.getElementById('payment-confirmation').style.display = 'block';
+      }, 3000);
+    }
+    
+    // Confirm payment and place order
+    async function confirmPayment() {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        alert('Please login to place an order');
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      try {
+        const order = {
+          items: orderData.items,
+          total: orderData.total,
+          paymentMethod: 'UPI',
+          deliveryAddress: 'Default Address',
+          customerName: 'Customer',
+          restaurantName: orderData.restaurantName,
+          paymentStatus: 'pending_verification'
+        };
+        
+        const response = await fetch('http://localhost:3000/api/checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify(order)
+        });
+        
+        if (!response.ok) {
+          throw new Error('Order placement failed');
+        }
+        
+        const data = await response.json();
+        
+        alert(`Order placed successfully! Order ID: ${data.orderId}\n\nPlease send the payment screenshot to our support team for verification.`);
+        
+        // Redirect to profile to see the order
+        window.location.href = 'profile.html';
+        
+      } catch (error) {
+        console.error('Order error:', error);
+        alert('Order failed! Please try again.');
+      }
+    }
+    
+    // Cancel payment
+    function cancelPayment() {
+      if (confirm('Are you sure you want to cancel the payment?')) {
+        window.history.back();
+      }
+    }
+    
+    // Initialize
+    window.onload = function() {
+      loadOrderData();
+    };
+  </script>
+
+<script>
+  window.onload = () => document.body.classList.add('loaded');
+</script>
+  
+</body>
+</html> 

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Profile - YummyBite</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .admin-container { max-width: 700px; margin: 60px auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(40,40,80,0.10); padding: 32px 28px; }
+    .admin-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 18px; text-align: center; }
+    .admin-section { margin-bottom: 32px; }
+    .admin-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+    .admin-table th, .admin-table td { border: 1px solid #eee; padding: 8px 12px; text-align: left; }
+    .admin-table th { background: #fafafa; }
+    .admin-empty { color: #d32f2f; font-weight: 600; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="admin-title">Admin Profile</div>
+    <div class="admin-section">
+      <h3>All Users</h3>
+      <table class="admin-table" id="users-table">
+        <thead><tr><th>Username</th><th>Admin</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div id="users-empty" class="admin-empty" style="display:none;">No users found.</div>
+    </div>
+    <div class="admin-section">
+      <h3>All Orders</h3>
+      <table class="admin-table" id="orders-table">
+        <thead><tr><th>User</th><th>Items</th><th>Total</th><th>Payment</th><th>Date</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div id="orders-empty" class="admin-empty" style="display:none;">No orders found.</div>
+    </div>
+    <div id="admin-login" class="admin-empty" style="display:none;">Admin access only. <a href="login.html">Login</a></div>
+    <div id="admin-denied" class="admin-empty" style="display:none;">Access denied. Admins only.</div>
+  </div>
+  <script>
+    const token = localStorage.getItem('token');
+    function fetchAdminData() {
+      fetch('http://localhost:3000/api/admin/users', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(res => {
+        if (res.status === 403) throw new Error('denied');
+        return res.json();
+      })
+      .then(users => {
+        const tbody = document.querySelector('#users-table tbody');
+        if (!users.length) document.getElementById('users-empty').style.display = 'block';
+        users.forEach(u => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${u.username}</td><td>${u.isAdmin ? 'Yes' : 'No'}</td>`;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        if (err.message === 'denied') {
+          document.getElementById('admin-denied').style.display = 'block';
+        }
+      });
+      fetch('http://localhost:3000/api/admin/orders', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(res => {
+        if (res.status === 403) throw new Error('denied');
+        return res.json();
+      })
+      .then(orders => {
+        const tbody = document.querySelector('#orders-table tbody');
+        if (!orders.length) document.getElementById('orders-empty').style.display = 'block';
+        orders.reverse().forEach(order => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${order.username}</td>
+            <td>${order.items.map(i => `${i.name} (₹${i.price})`).join('<br>')}</td>
+            <td>₹${order.total}</td>
+            <td>${order.paymentMethod}</td>
+            <td>${new Date(order.date).toLocaleString()}</td>`;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        if (err.message === 'denied') {
+          document.getElementById('admin-denied').style.display = 'block';
+        }
+      });
+    }
+    if (!token) {
+      document.getElementById('admin-login').style.display = 'block';
+    } else {
+      fetchAdminData();
+    }
+  </script>
+</body>
+</html> 

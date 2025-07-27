@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YummyBite 3D - Order Your Favorites</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Header Animations */
+    .z-header {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      animation: headerSlideDown 0.8s ease-out;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    @keyframes headerSlideDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .z-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 20px;
+      color: #333;
+      transition: all 0.3s ease;
+    }
+    
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: #ff6b35;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 18px;
+    }
+    
+    .logo-text {
+      color: #333;
+      font-weight: 700;
+    }
+    
+    .z-logo::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .z-logo:hover::before {
+      left: 100%;
+    }
+    
+    .z-logo:hover {
+      transform: scale(1.02);
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    .z-location {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .location-label {
+      font-size: 12px;
+      color: #666;
+      text-decoration: underline;
+    }
+    
+    .location-details {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+    }
+    
+    .location-arrow {
+      color: #ff6b35;
+      font-size: 12px;
+    }
+    
+    .z-location::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+    
+    .z-location:hover::before {
+      transform: translateX(100%);
+    }
+    
+    .z-location:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.15);
+    }
+    
+    .z-location-icon {
+      animation: locationPulse 2s infinite;
+    }
+    
+    @keyframes locationPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .z-location-select {
+      background: transparent;
+      border: none;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .z-location-select:hover {
+      transform: scale(1.05);
+    }
+    
+    .z-location-select option {
+      background: #ff385c;
+      color: white;
+    }
+    
+    /* Navigation Items */
+    .z-nav {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #333;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      position: relative;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.4s ease;
+    }
+    
+    .nav-item:hover::before {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .nav-item:hover {
+      background: #f5f5f5;
+      color: #ff6b35;
+    }
+    
+    .nav-item:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+    
+    .nav-icon {
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    .new-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ffd700;
+      color: #333;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      line-height: 1;
+    }
+    
+    .cart-item {
+      position: relative;
+    }
+    
+    #cart-count {
+      background: #ff6b35;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+    
+    /* Ensure login is always visible when not logged in */
+    body:not(.logged-in) .login-item {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    
+    /* Header Content Animation */
+    .z-header-content {
+      animation: contentFadeIn 1s ease-out 0.3s both;
+    }
+    
+    @keyframes contentFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .z-nav {
+        gap: 10px;
+      }
+      
+      .nav-item {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+      
+      .nav-icon {
+        font-size: 16px;
+      }
+      
+      .z-logo {
+        font-size: 20px;
+      }
+    }
+    
+    /* Loading Animation for Profile */
+    .profile-loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Fade In Animation for Page */
+    body {
+      animation: pageFadeIn 0.8s ease-out;
+    }
+    
+    @keyframes pageFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Force login visibility */
+    #login-link {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  </style>
+</head>
+<body>
+
+
+  
+  <!-- Header -->
+  <header class="z-header">
+    <div class="z-container z-header-content">
+      <div class="z-logo">
+        <div class="logo-icon">S</div>
+        <span class="logo-text">YummyBite</span>
+      </div>
+      
+      <div class="z-location">
+        <span class="location-label">Other</span>
+        <div class="location-details">
+          <span class="location-text">Sanath Nagar, Vijayawada, Andhra Pradesh</span>
+          <span class="location-arrow">▼</span>
+        </div>
+      </div>
+      
+      <nav class="z-nav">
+        <a href="#" class="nav-item corporate-item">
+          <span class="nav-icon">💼</span>
+          YummyBite Corporate
+        </a>
+        <a href="#" class="nav-item search-item">
+          <span class="nav-icon">🔍</span>
+          Search
+        </a>
+        <a href="#" class="nav-item offers-item">
+          <span class="nav-icon">%</span>
+          Offers
+          <span class="new-badge">NEW</span>
+        </a>
+        <a href="#" class="nav-item help-item">
+          <span class="nav-icon">🎧</span>
+          Help
+        </a>
+        <a href="profile.html" id="profile-link" class="nav-item profile-item" style="display: none;">
+          <span class="nav-icon">👤</span>
+          <span id="user-name-display">Profile</span>
+        </a>
+        <a href="login.html" id="login-link" class="nav-item login-item" style="display: flex;">
+          <span class="nav-icon">👤</span>
+          Sign In
+        </a>
+        <a href="#" id="logout-link" class="nav-item logout-item" style="display: none;" onclick="logout()">
+          <span class="nav-icon">🚪</span>
+          Logout
+        </a>
+        <a href="#cart-sidebar" class="nav-item cart-item">
+          <span class="nav-icon">🛒</span>
+          <span class="cart-text">Cart</span>
+          <span id="cart-count">0</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- What's on your mind? Section -->
+  <section class="z-mind-section">
+    <div class="z-container">
+      <h2 class="z-section-title">What's on your mind?</h2>
+      <div class="z-mind-arrows">
+        <button class="z-arrow z-arrow-left" aria-label="Scroll left">&#8592;</button>
+        <button class="z-arrow z-arrow-right" aria-label="Scroll right">&#8594;</button>
+      </div>
+      <div class="z-mind-scroll">
+        <a href="category.html?item=Biryani" class="z-mind-link"><div class="z-mind-item" data-name="Biryani" data-img="Chicken-Biryani-2.jpg">
+          <img src="Chicken-Biryani-2.jpg" alt="Biryani" />
+          <span>Biryani</span>
+        </div></a>
+        <a href="category.html?item=Shawarma" class="z-mind-link"><div class="z-mind-item" data-name="Shawarma" data-img="shawarma-with-chicken-and-vegetables-arabic-style-generative-ai-free-photo.jpeg">
+          <img src="shawarma-with-chicken-and-vegetables-arabic-style-generative-ai-free-photo.jpeg" alt="Shawarma" />
+          <span>Shawarma</span>
+        </div></a>
+        <a href="category.html?item=Khichdi" class="z-mind-link"><div class="z-mind-item" data-name="Khichdi" data-img="Oats-Khichdi-Blog.jpg">
+          <img src="Oats-Khichdi-Blog.jpg" alt="Khichdi" />
+          <span>Khichdi</span>
+        </div></a>
+        <a href="category.html?item=Dosa" class="z-mind-link"><div class="z-mind-item" data-name="Dosa" data-img="Masala-Dosa.jpg">
+          <img src="Masala-Dosa.jpg" alt="Dosa" />
+          <span>Dosa</span>
+        </div></a>
+        <a href="category.html?item=Parotta" class="z-mind-link"><div class="z-mind-item" data-name="Parotta" data-img="https://placehold.co/80x80?text=Parotta">
+          <img src="parotta.jpg" alt="Parotta" />
+          <span>Parotta</span>
+        </div></a>
+        <a href="category.html?item=Pizzas" class="z-mind-link"><div class="z-mind-item" data-name="Pizzas" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Pizzas" />
+          <span>Pizzas</span>
+        </div></a>
+        <a href="category.html?item=Burger" class="z-mind-link"><div class="z-mind-item" data-name="Burger" data-img="burgger.jpg">
+          <img src="burgger.jpg" alt="Burger" />
+          <span>Burger</span>
+        </div></a>
+        <a href="category.html?item=Ice%20Cream" class="z-mind-link"><div class="z-mind-item" data-name="Ice Cream" data-img="ice cream.jpg">
+          <img src="ice cream.jpg" alt="Ice Cream" />
+          <span>Ice Cream</span>
+        </div></a>
+        <a href="category.html?item=Samosa" class="z-mind-link"><div class="z-mind-item" data-name="Samosa" data-img="south-indian-breakfast-idli-chutney-48378225.webp">
+          <img src="samosa.jpg" alt="Samosa" />
+          <span>Samosa</span>
+        </div></a>
+        <a href="category.html?item=Idli" class="z-mind-link"><div class="z-mind-item" data-name="Idli" data-img="idli.jpg">
+          <img src="south-indian-breakfast-idli-chutney-48378225.webp" alt="Idli" />
+          <span>Idli</span>
+        </div></a>
+        <a href="category.html?item=Paneer" class="z-mind-link"><div class="z-mind-item" data-name="Paneer" data-img="Paneer-Butter-Masala-Recipe-1.jpg">
+          <img src="Paneer-Butter-Masala-Recipe-1.jpg" alt="Paneer" />
+          <span>Paneer</span>
+        </div></a>
+        <a href="category.html?item=Noodles" class="z-mind-link"><div class="z-mind-item" data-name="Noodles" data-img="noodles.jpg">
+          <img src="noodles.jpg" alt="Noodles" />
+          <span>Noodles</span>
+        </div></a>
+        <a href="category.html?item=Sandwich" class="z-mind-link"><div class="z-mind-item" data-name="Sandwich" data-img="sandwitch.jpg">
+          <img src="sandwitch.jpg" alt="Sandwich" />
+          <span>Sandwich</span>
+        </div></a>
+        <a href="category.html?item=Salad" class="z-mind-link"><div class="z-mind-item" data-name="Salad" data-img="salad.jpg">
+          <img src="salad.jpg" alt="Salad" />
+          <span>Salad</span>
+        </div></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Top Restaurant Chains Section -->
+  <section class="z-chains-section">
+    <div class="z-container">
+      <h2 class="z-section-title">Top restaurant chains in Your City</h2>
+      <div class="z-chains-arrows">
+        <button class="z-arrow z-arrow-left" aria-label="Scroll left">&#8592;</button>
+        <button class="z-arrow z-arrow-right" aria-label="Scroll right">&#8594;</button>
+      </div>
+      <div class="z-chains-scroll">
+        <div class="z-chain-card" data-name="50% OFF UPTO ₹100" data-img="https://placehold.co/220x140/ff385c/fff?text=50%25+OFF+UPTO+%E2%82%B9100">
+          <img src="https://placehold.co/220x140/ff385c/fff?text=50%25+OFF+UPTO+%E2%82%B9100" alt="Pizza Offer" />
+        </div>
+        <div class="z-chain-card" data-name="ITEMS AT ₹59" data-img="https://placehold.co/220x140/ffb700/fff?text=ITEMS+AT+%E2%82%B959">
+          <img src="https://placehold.co/220x140/ffb700/fff?text=ITEMS+AT+%E2%82%B959" alt="KFC Offer" />
+        </div>
+        <div class="z-chain-card" data-name="ITEMS AT ₹124" data-img="https://placehold.co/220x140/00b894/fff?text=ITEMS+AT+%E2%82%B9124">
+          <img src="https://placehold.co/220x140/00b894/fff?text=ITEMS+AT+%E2%82%B9124" alt="Ice Cream Offer" />
+        </div>
+        <div class="z-chain-card" data-name="ITEMS AT ₹125" data-img="https://placehold.co/220x140/6366f1/fff?text=ITEMS+AT+%E2%82%B9125">
+          <img src="https://placehold.co/220x140/6366f1/fff?text=ITEMS+AT+%E2%82%B9125" alt="Other Offer" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Offers Section -->
+  <section class="z-chains-section">
+    <div class="z-container">
+      <h2 class="z-section-title">Top restaurant chains in Your City</h2>
+      <div class="z-chains-arrows">
+        <button class="z-arrow z-arrow-left" aria-label="Scroll left">&#8592;</button>
+        <button class="z-arrow z-arrow-right" aria-label="Scroll right">&#8594;</button>
+      </div>
+      <div class="z-chains-scroll">
+        <div class="z-chain-card" data-name="50% OFF UPTO ₹100" data-img="https://placehold.co/220x140/ff385c/fff?text=50%25+OFF+UPTO+%E2%82%B9100">
+          <img src="https://placehold.co/220x140/ff385c/fff?text=50%25+OFF+UPTO+%E2%82%B9100" alt="Pizza Offer" />
+        </div>
+        <div class="z-chain-card" data-name="ITEMS AT ₹59" data-img="https://placehold.co/220x140/ffb700/fff?text=ITEMS+AT+%E2%82%B959">
+          <img src="https://placehold.co/220x140/ffb700/fff?text=ITEMS+AT+%E2%82%B959" alt="KFC Offer" />
+        </div>
+        <div class="z-chain-card" data-name="ITEMS AT ₹124" data-img="https://placehold.co/220x140/00b894/fff?text=ITEMS+AT+%E2%82%B9124">
+          <img src="https://placehold.co/220x140/00b894/fff?text=ITEMS+AT+%E2%82%B9124" alt="Ice Cream Offer" />
+        </div>
+        <div class="z-chain-card" data-name="ITEMS AT ₹125" data-img="https://placehold.co/220x140/6366f1/fff?text=ITEMS+AT+%E2%82%B9125">
+          <img src="https://placehold.co/220x140/6366f1/fff?text=ITEMS+AT+%E2%82%B9125" alt="Other Offer" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Restaurant Cards (Static) -->
+  <section id="restaurants" class="z-restaurant-section">
+    <div class="z-container">
+      <h2>Top Rated Restaurants</h2>
+      <div class="z-explore-options">
+        <button class="z-option-btn" id="sortByBtn">
+          Sort By <span class="z-option-arrow">▼</span>
+        </button>
+      </div>
+      <div class="z-restaurant-grid">
+        <div class="z-restaurant-card z-3d-card">
+          <img src="spice-villa-looks-like.jpg" alt="Spice Villa">
+          <div class="z-restaurant-info">
+            <h3>Spice Villa</h3>
+            <p>North Indian, Chinese</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.5 ★</span>
+              <span>• ₹₹ •</span>
+              <span>30-40 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="IMAG2.jpg" alt="Café Brew">
+          <div class="z-restaurant-info">
+            <h3>Café Brew</h3>
+            <p>Coffee, Sandwiches</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.2 ★</span>
+              <span>• ₹ •</span>
+              <span>20-30 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="PIZZA PALACE.webp" alt="Pizza Palace">
+          <div class="z-restaurant-info">
+            <h3>Pizza Palace</h3>
+            <p>Pizza, Italian</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.7 ★</span>
+              <span>• ₹₹₹ •</span>
+              <span>35-45 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="BURGER HUB.jpg" alt="Burger Hub">
+          <div class="z-restaurant-info">
+            <h3>Burger Hub</h3>
+            <p>Burgers, Fast Food</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.3 ★</span>
+              <span>• ₹₹ •</span>
+              <span>25-35 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="spicy-tandoori-chicken-delight-with-tandoori-seasoning_1106454-34706.jpg" alt="Tandoori Delight">
+          <div class="z-restaurant-info">
+            <h3>Tandoori Delight</h3>
+            <p>North Indian, Tandoor</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.6 ★</span>
+              <span>• ₹₹ •</span>
+              <span>28-38 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="VEG CORNER.jpg" alt="Veggie Corner">
+          <div class="z-restaurant-info">
+            <h3>Veggie Corner</h3>
+            <p>Vegetarian, South Indian</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.4 ★</span>
+              <span>• ₹ •</span>
+              <span>18-25 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="URBAN.jpeg" alt="Urban Bites">
+          <div class="z-restaurant-info">
+            <h3>Urban Bites</h3>
+            <p>Continental, Fast Food</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.1 ★</span>
+              <span>• ₹₹ •</span>
+              <span>22-32 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="OIP.webp" alt="Sweet Tooth">
+          <div class="z-restaurant-info">
+            <h3>Sweet Tooth</h3>
+            <p>Desserts, Bakery</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.8 ★</span>
+              <span>• ₹ •</span>
+              <span>15-20 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="GREEN.webp" alt="The Green Leaf">
+          <div class="z-restaurant-info">
+            <h3>The Green Leaf</h3>
+            <p>Healthy, Salads</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.5 ★</span>
+              <span>• ₹₹ •</span>
+              <span>20-28 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="OC.jpg" alt="Oceanic Bites">
+          <div class="z-restaurant-info">
+            <h3>Oceanic Bites</h3>
+            <p>Seafood, Continental</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.3 ★</span>
+              <span>• ₹₹₹ •</span>
+              <span>30-40 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="SPICAAA.jpg" alt="Spicy Affair">
+          <div class="z-restaurant-info">
+            <h3>Spicy Affair</h3>
+            <p>Indian, Chinese</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.2 ★</span>
+              <span>• ₹₹ •</span>
+              <span>25-35 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="BA.webp" alt="Baker's Den">
+          <div class="z-restaurant-info">
+            <h3>Baker's Den</h3>
+            <p>Bakery, Desserts</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.7 ★</span>
+              <span>• ₹ •</span>
+              <span>15-22 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="NOO.jpg" alt="Noodle House">
+          <div class="z-restaurant-info">
+            <h3>Noodle House</h3>
+            <p>Chinese, Thai</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.4 ★</span>
+              <span>• ₹₹ •</span>
+              <span>18-28 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="GRILL.jpeg" alt="Grill Master">
+          <div class="z-restaurant-info">
+            <h3>Grill Master</h3>
+            <p>Barbecue, Fast Food</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.6 ★</span>
+              <span>• ₹₹₹ •</span>
+              <span>22-32 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="z-restaurant-card z-3d-card">
+          <img src="ROLLLL.webp" alt="Royal Treat">
+          <div class="z-restaurant-info">
+            <h3>Royal Treat</h3>
+            <p>Mughlai, North Indian</p>
+            <div class="z-restaurant-meta">
+              <span class="z-rating">4.5 ★</span>
+              <span>• ₹₹₹ •</span>
+              <span>30-40 min</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Menu Section (Static) -->
+  <section id="menu" class="z-menu-section">
+    <div class="z-container">
+      <h2>Popular Dishes</h2>
+      <div class="z-menu-grid">
+        <div class="z-menu-card z-3d-card">
+          <img src="pizza.jpg" alt="Cheese Pizza">
+          <div class="z-menu-info">
+            <h3>Cheese Pizza</h3>
+            <p class="z-menu-price">₹249</p>
+            <button class="z-btn z-btn-primary z-add-to-cart-popular" data-name="Cheese Pizza" data-price="249">Add to Cart</button>
+          </div>
+        </div>
+        <div class="z-menu-card z-3d-card">
+          <img src="burgger.jpg" alt="Grilled Burger">
+          <div class="z-menu-info">
+            <h3>Grilled Burger</h3>
+            <p class="z-menu-price">₹199</p>
+            <button class="z-btn z-btn-primary z-add-to-cart-popular" data-name="Grilled Burger" data-price="199">Add to Cart</button>
+          </div>
+        </div>
+        <div class="z-menu-card z-3d-card">
+          <img src="https://genv.org/wp-content/uploads/2023/02/17-Vegetable-Biryani.jpg'" alt="Veg Biryani">
+          <div class="z-menu-info">
+            <h3>Veg Biryani</h3>
+            <p class="z-menu-price">₹179</p>
+            <button class="z-btn z-btn-primary z-add-to-cart-popular" data-name="Veg Biryani" data-price="179">Add to Cart</button>
+          </div>
+        </div>
+        <div class="z-menu-card z-3d-card">
+          <img src="cold.jpg" alt="Cold Coffee">
+          <div class="z-menu-info">
+            <h3>Cold Coffee</h3>
+            <p class="z-menu-price">₹99</p>
+            <button class="z-btn z-btn-primary z-add-to-cart-popular" data-name="Cold Coffee" data-price="99">Add to Cart</button>
+          </div>
+        </div>
+        <div class="z-menu-card z-3d-card">
+          <img src="pasta.webp" alt="Pasta Alfredo">
+          <div class="z-menu-info">
+            <h3>Pasta Alfredo</h3>
+            <p class="z-menu-price">₹229</p>
+            <button class="z-btn z-btn-primary z-add-to-cart-popular" data-name="Pasta Alfredo" data-price="229">Add to Cart</button>
+          </div>
+        </div>
+        <div class="z-menu-card z-3d-card">
+          <img src="french.webp" alt="French Fries">
+          <div class="z-menu-info">
+            <h3>French Fries</h3>
+            <p class="z-menu-price">₹89</p>
+            <button class="z-btn z-btn-primary">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cart Sidebar -->
+  <aside id="cart-sidebar" class="z-cart-sidebar">
+    <div class="z-cart-header">
+      <h3>Your Cart</h3>
+      <button id="close-cart">×</button>
+    </div>
+    <ul id="cart-items" class="z-cart-items"></ul>
+    <div class="z-cart-footer">
+      <p><strong>Total:</strong> ₹<span id="cart-total">0</span></p>
+      <label for="payment-method-cart">Payment Method:</label>
+      <select id="payment-method-cart" required>
+        <option value="cod">Cash on Delivery</option>
+        <option value="card">Credit/Debit Card</option>
+        <option value="upi">UPI</option>
+      </select>
+      <button id="checkout-btn" class="z-btn z-btn-primary">Checkout</button>
+    </div>
+  </aside>
+
+  <!-- Checkout Modal -->
+  <div id="checkout-modal" class="z-modal">
+    <div class="z-modal-content">
+      <span class="z-close" id="close-checkout">&times;</span>
+      <h2>Checkout</h2>
+      <form id="checkout-form">
+        <label>Name</label>
+        <input type="text" id="user-name" placeholder="Your Name" required>
+        <label>Address</label>
+        <textarea id="user-address" placeholder="Delivery Address" required></textarea>
+        <label>Payment Method</label>
+        <select id="payment-method" required>
+          <option value="cod">Cash on Delivery</option>
+          <option value="card">Credit/Debit Card</option>
+          <option value="upi">UPI</option>
+        </select>
+        <button type="submit" class="z-btn z-btn-primary">Place Order</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal for card popup -->
+  <div id="z-modal-popup" class="z-modal" style="display:none;">
+    <div class="z-modal-content" style="max-width:340px;text-align:center;">
+      <span class="z-close" id="z-modal-close">&times;</span>
+      <img id="z-modal-img" src="" alt="" style="width:120px;height:120px;border-radius:16px;object-fit:cover;margin-bottom:18px;" />
+      <h2 id="z-modal-title" style="font-size:1.3rem;font-weight:700;margin-bottom:0;"></h2>
+    </div>
+  </div>
+
+  <!-- Sort By Modal -->
+  <div id="sortByModal" class="z-modal-sortby" style="display:none;">
+    <div class="z-modal-sortby-content">
+      <button class="z-modal-close" id="closeSortBy">&times;</button>
+      <div class="z-modal-sortby-title">Sort By</div>
+      <form id="sortByForm">
+        <label class="z-radio-label">
+          <input type="radio" name="sort" value="relevance" checked>
+          <span class="z-radio-custom"></span>
+          Relevance (Default)
+        </label>
+        <label class="z-radio-label">
+          <input type="radio" name="sort" value="delivery">
+          <span class="z-radio-custom"></span>
+          Delivery Time
+        </label>
+        <label class="z-radio-label">
+          <input type="radio" name="sort" value="rating">
+          <span class="z-radio-custom"></span>
+          Rating
+        </label>
+        <label class="z-radio-label">
+          <input type="radio" name="sort" value="costLowHigh">
+          <span class="z-radio-custom"></span>
+          Cost: Low to High
+        </label>
+        <label class="z-radio-label">
+          <input type="radio" name="sort" value="costHighLow">
+          <span class="z-radio-custom"></span>
+          Cost: High to Low
+        </label>
+        <button type="submit" class="z-modal-apply">Apply</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="z-footer">
+    <div class="z-container">
+      <p>📞 +91 98765 43210 | 📍 Hyderabad, India</p>
+      <p>© 2025 YummyBite | Inspired by Zomato</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Page load animation
+    window.addEventListener('load', function() {
+      document.body.classList.add('loaded');
+      
+      // Add staggered animation to restaurant cards
+      const cards = document.querySelectorAll('.z-restaurant-card');
+      cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('fade-in-up');
+      });
+    });
+    
+    // Add CSS for card animations
+    const style = document.createElement('style');
+    style.textContent = `
+      .z-restaurant-card {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+      }
+      
+      .z-restaurant-card.fade-in-up {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      .z-restaurant-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      }
+      
+      body.loaded {
+        animation: none;
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

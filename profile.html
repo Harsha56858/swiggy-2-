@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - YummyBite</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .profile-container {
+      display: flex;
+      min-height: 100vh;
+      background: #f8f9fa;
+    }
+    
+    .profile-sidebar {
+      width: 280px;
+      background: #1a1a1a;
+      color: white;
+      padding: 0;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    
+    .profile-header {
+      background: #2d2d2d;
+      padding: 30px 20px;
+      border-bottom: 1px solid #404040;
+    }
+    
+    .profile-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff385c, #ffb700);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    
+    .profile-name {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .profile-email {
+      font-size: 14px;
+      color: #ccc;
+    }
+    
+    .profile-nav {
+      padding: 20px 0;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+      min-height: 44px; /* Touch-friendly minimum size */
+      touch-action: manipulation;
+    }
+    
+    .nav-item:hover {
+      background: #2d2d2d;
+      transform: translateX(5px);
+    }
+    
+    .nav-item:active {
+      transform: translateX(2px);
+    }
+    
+    .nav-item.active {
+      background: #2d2d2d;
+      border-left-color: #ff385c;
+    }
+    
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .nav-text {
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    .profile-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 30px;
+    }
+    
+    .content-header {
+      margin-bottom: 30px;
+    }
+    
+    .content-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .content-subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .order-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border: 1px solid #e0e0e0;
+    }
+    
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    
+    .restaurant-info h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .restaurant-location {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    
+    .order-meta {
+      color: #888;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+    
+    .order-status {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .status-icon {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+    
+    .status-delivered {
+      color: #4caf50;
+    }
+    
+    .status-pending {
+      color: #ff9800;
+    }
+    
+    .status-cancelled {
+      color: #f44336;
+    }
+    
+    .order-content {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    
+    .order-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #f5f5f5;
+    }
+    
+    .order-details {
+      flex: 1;
+    }
+    
+    .order-items {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    
+    .order-total {
+      font-weight: 600;
+      color: #333;
+      font-size: 16px;
+    }
+    
+    .order-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .btn-reorder {
+      background: #ff385c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    
+    .btn-reorder:hover {
+      background: #e0314f;
+    }
+    
+    .btn-help {
+      background: white;
+      color: #ff385c;
+      border: 1px solid #ff385c;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-help:hover {
+      background: #ff385c;
+      color: white;
+    }
+    
+    .view-details {
+      color: #ff385c;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .view-details:hover {
+      text-decoration: underline;
+    }
+    
+    .content-section {
+      display: none;
+    }
+    
+    .content-section.active {
+      display: block;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+    
+    .empty-state h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .empty-state p {
+      margin-bottom: 20px;
+    }
+    
+    .btn-primary {
+      background: #ff385c;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+      min-height: 44px; /* Touch-friendly minimum size */
+      touch-action: manipulation;
+    }
+    
+    .btn-primary:hover {
+      background: #e0314f;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 56, 92, 0.3);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(255, 56, 92, 0.3);
+    }
+    
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 300px;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    
+    @media (max-width: 768px) {
+      .profile-container {
+        flex-direction: column;
+        min-height: auto;
+      }
+      
+      .profile-sidebar {
+        width: 100%;
+        position: relative;
+        height: auto;
+        max-height: none;
+      }
+      
+      .profile-content {
+        margin-left: 0;
+        padding: 20px;
+      }
+      
+      .back-btn {
+        left: 20px;
+        top: 15px;
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+      }
+      
+      .profile-header {
+        padding: 20px;
+        text-align: center;
+      }
+      
+      .profile-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        margin: 0 auto 15px;
+      }
+      
+      .profile-nav {
+        padding: 10px 0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+      }
+      
+      .nav-item {
+        flex: 1;
+        min-width: 120px;
+        max-width: 150px;
+        padding: 12px 8px;
+        border-radius: 8px;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        text-align: center;
+        flex-direction: column;
+        gap: 5px;
+      }
+      
+      .nav-item.active {
+        border-left-color: transparent;
+        border-bottom-color: #ff385c;
+        background: #2d2d2d;
+      }
+      
+      .nav-icon {
+        margin-right: 0;
+        font-size: 18px;
+      }
+      
+      .nav-text {
+        font-size: 12px;
+        text-align: center;
+      }
+      
+      .content-title {
+        font-size: 24px;
+      }
+      
+      .content-subtitle {
+        font-size: 14px;
+      }
+      
+      .order-card {
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      
+      .order-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      
+      .order-content {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+      }
+      
+      .order-image {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+      }
+      
+      .order-actions {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .btn-reorder,
+      .btn-help {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .profile-content {
+        padding: 15px;
+      }
+      
+      .profile-header {
+        padding: 15px;
+      }
+      
+      .profile-nav {
+        gap: 3px;
+      }
+      
+      .nav-item {
+        min-width: 100px;
+        padding: 10px 6px;
+      }
+      
+      .nav-text {
+        font-size: 11px;
+      }
+      
+      .content-title {
+        font-size: 20px;
+      }
+      
+      .order-card {
+        padding: 12px;
+      }
+      
+      .order-header h3 {
+        font-size: 16px;
+      }
+      
+      .empty-state {
+        padding: 40px 15px;
+      }
+      
+      .empty-state h3 {
+        font-size: 18px;
+      }
+      
+      .btn-primary {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="window.location.href='main.html'">←</button>
+  
+  <div class="profile-container">
+    <!-- Sidebar -->
+    <div class="profile-sidebar">
+      <div class="profile-header">
+        <div class="profile-avatar" id="profile-avatar">U</div>
+        <div class="profile-name" id="profile-name">User</div>
+        <div class="profile-email" id="profile-email">user@example.com</div>
+      </div>
+      
+      <div class="profile-nav">
+        <div class="nav-item active" onclick="showSection('orders')">
+          <div class="nav-icon">🛍️</div>
+          <div class="nav-text">Orders</div>
+        </div>
+        <div class="nav-item" onclick="showSection('swiggy-one')">
+          <div class="nav-icon">⏰</div>
+          <div class="nav-text">YummyBite One</div>
+        </div>
+        <div class="nav-item" onclick="showSection('favourites')">
+          <div class="nav-icon">❤️</div>
+          <div class="nav-text">Favourites</div>
+        </div>
+        <div class="nav-item" onclick="showSection('payments')">
+          <div class="nav-icon">💳</div>
+          <div class="nav-text">Payments</div>
+        </div>
+        <div class="nav-item" onclick="showSection('addresses')">
+          <div class="nav-icon">📍</div>
+          <div class="nav-text">Addresses</div>
+        </div>
+        <div class="nav-item" onclick="window.location.href='profile-settings.html'">
+          <div class="nav-icon">⚙️</div>
+          <div class="nav-text">Settings</div>
+        </div>
+        <div class="nav-item" onclick="logout()">
+          <div class="nav-icon">🚪</div>
+          <div class="nav-text">Logout</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="profile-content">
+      <!-- Orders Section -->
+      <div id="orders-section" class="content-section active">
+        <div class="content-header">
+          <h1 class="content-title">Past Orders</h1>
+          <p class="content-subtitle">Track all your previous orders</p>
+        </div>
+        <div id="orders-list">
+          <div class="loading">Loading your orders...</div>
+        </div>
+      </div>
+      
+      <!-- YummyBite One Section -->
+      <div id="swiggy-one-section" class="content-section">
+        <div class="content-header">
+          <h1 class="content-title">YummyBite One</h1>
+          <p class="content-subtitle">Premium membership benefits</p>
+        </div>
+        <div class="empty-state">
+          <h3>Upgrade to YummyBite One</h3>
+          <p>Get unlimited free deliveries, exclusive offers, and priority support.</p>
+          <button class="btn-primary" onclick="upgradeMembership()">Upgrade Now</button>
+        </div>
+      </div>
+      
+      <!-- Favourites Section -->
+      <div id="favourites-section" class="content-section">
+        <div class="content-header">
+          <h1 class="content-title">Favourites</h1>
+          <p class="content-subtitle">Your saved restaurants and dishes</p>
+        </div>
+        <div class="empty-state">
+          <h3>No Favourites Yet</h3>
+          <p>Start adding restaurants and dishes to your favourites for quick access.</p>
+          <a href="main.html" class="btn-primary">Explore Restaurants</a>
+        </div>
+      </div>
+      
+      <!-- Payments Section -->
+      <div id="payments-section" class="content-section">
+        <div class="content-header">
+          <h1 class="content-title">Payments</h1>
+          <p class="content-subtitle">Manage your payment methods</p>
+        </div>
+        <div class="empty-state">
+          <h3>No Payment Methods</h3>
+          <p>Add your preferred payment methods for faster checkout.</p>
+          <button class="btn-primary" onclick="goToPaymentSettings()">Add Payment Method</button>
+        </div>
+      </div>
+      
+      <!-- Addresses Section -->
+      <div id="addresses-section" class="content-section">
+        <div class="content-header">
+          <h1 class="content-title">Addresses</h1>
+          <p class="content-subtitle">Manage your delivery addresses</p>
+        </div>
+        <div class="empty-state">
+          <h3>No Addresses Saved</h3>
+          <p>Add your delivery addresses for quick ordering.</p>
+          <button class="btn-primary" onclick="goToAddressSettings()">Add Address</button>
+        </div>
+      </div>
+      
+      <!-- Settings Section -->
+      <div id="settings-section" class="content-section">
+        <div class="content-header">
+          <h1 class="content-title">Settings</h1>
+          <p class="content-subtitle">Manage your account preferences</p>
+        </div>
+        <div class="empty-state">
+          <h3>Account Settings</h3>
+          <p>Update your profile information and preferences.</p>
+          <button class="btn-primary">Edit Profile</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Preload user data for instant access
+    let cachedUser = null;
+    
+    // Check authentication and update profile info
+    function checkAuth() {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (!token) {
+        window.location.href = 'login.html';
+        return false;
+      }
+      
+      // Update profile info immediately
+      updateProfileInfo(user);
+      
+      return true;
+    }
+    
+    // Update profile information - IMMEDIATE updates with zero delay
+    function updateProfileInfo(user) {
+      // Cache user data for instant access
+      cachedUser = user;
+      
+      // IMMEDIATE DOM updates - no requestAnimationFrame delay
+      const profileName = document.getElementById('profile-name');
+      const profileEmail = document.getElementById('profile-email');
+      const profileAvatar = document.getElementById('profile-avatar');
+      
+      if (profileName) {
+        profileName.textContent = user.name || 'User';
+      }
+      if (profileEmail) {
+        profileEmail.textContent = user.email || 'user@example.com';
+      }
+      if (profileAvatar) {
+        profileAvatar.textContent = (user.name || 'U').charAt(0).toUpperCase();
+      }
+      
+      // Store user info in sessionStorage for persistence
+      sessionStorage.setItem('profileUser', JSON.stringify(user));
+      
+      // Trigger a custom event for other components
+      window.dispatchEvent(new CustomEvent('profileUpdated', { detail: user }));
+    }
+    
+
+    
+    // Show section
+    function showSection(sectionName) {
+      // Update nav items
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.currentTarget.classList.add('active');
+      
+      // Update content sections
+      document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(sectionName + '-section').classList.add('active');
+      
+      // Load section data
+      if (sectionName === 'orders') {
+        loadOrders();
+      }
+    }
+    
+    // Get status icon
+    function getStatusIcon(status) {
+      switch(status.toLowerCase()) {
+        case 'delivered': return '✅';
+        case 'pending': return '⏳';
+        case 'cancelled': return '⚠️';
+        default: return '📦';
+      }
+    }
+    
+    // Format date
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
+    // Load orders
+    async function loadOrders() {
+      if (!checkAuth()) return;
+      
+      const token = localStorage.getItem('token');
+      
+      try {
+        const response = await fetch('http://localhost:3000/api/orders', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to load orders');
+        }
+        
+        const orders = await response.json();
+        displayOrders(orders);
+        
+      } catch (error) {
+        console.error('Error loading orders:', error);
+        document.getElementById('orders-list').innerHTML = `
+          <div class="error-message">
+            Failed to load orders. Please try again later.
+          </div>
+        `;
+      }
+    }
+    
+    // Display orders
+    function displayOrders(orders) {
+      const container = document.getElementById('orders-list');
+      
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>No Orders Yet</h3>
+            <p>You haven't placed any orders yet. Start ordering delicious food!</p>
+            <a href="main.html" class="btn-primary">Order Now</a>
+          </div>
+        `;
+        return;
+      }
+      
+      // Sort orders by date (newest first)
+      orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+      const ordersHtml = orders.map(order => {
+        const itemsText = order.items.map(item => `${item.name} x 1`).join(', ');
+        const total = order.items.reduce((sum, item) => sum + item.price, 0);
+        
+                 return `
+           <div class="order-card">
+             <div class="order-header">
+               <div class="restaurant-info">
+                 <h3>${order.restaurantName || 'Restaurant ' + order.id.slice(0, 8)}</h3>
+                 <div class="restaurant-location">Benz Circle And Auto Nagar</div>
+                 <div class="order-meta">ORDER #${order.id.slice(0, 15)} | ${formatDate(order.createdAt)}</div>
+                 <a href="#" class="view-details">VIEW DETAILS</a>
+               </div>
+               <div class="order-status ${getStatusClass(order.status)}">
+                 <span class="status-icon">${getStatusIcon(order.status)}</span>
+                 ${order.status.charAt(0).toUpperCase() + order.status.slice(1)} on ${formatDate(order.createdAt)}
+                 ${order.paymentStatus === 'pending_verification' ? '<br><small style="color: #ff9800;">Payment verification pending</small>' : ''}
+               </div>
+             </div>
+             <div class="order-content">
+               <img src="https://placehold.co/80x80?text=Food" alt="Food" class="order-image">
+               <div class="order-details">
+                 <div class="order-items">${itemsText}</div>
+                 <div class="order-total">Total Paid: ₹ ${total}</div>
+               </div>
+             </div>
+             <div class="order-actions">
+               <button class="btn-reorder" onclick="reorder('${order.id}')">REORDER</button>
+               <button class="btn-help" onclick="getHelp('${order.id}')">HELP</button>
+             </div>
+           </div>
+         `;
+      }).join('');
+      
+      container.innerHTML = ordersHtml;
+    }
+    
+    // Get status class
+    function getStatusClass(status) {
+      switch(status.toLowerCase()) {
+        case 'delivered': return 'status-delivered';
+        case 'pending': return 'status-pending';
+        case 'cancelled': return 'status-cancelled';
+        default: return 'status-pending';
+      }
+    }
+    
+    // Reorder function
+    function reorder(orderId) {
+      alert('Reorder functionality coming soon!');
+    }
+    
+    // Help function
+    function getHelp(orderId) {
+      alert('Help functionality coming soon!');
+    }
+    
+    // Upgrade membership function
+    function upgradeMembership() {
+      alert('YummyBite One upgrade coming soon! You\'ll get unlimited free deliveries, exclusive offers, and priority support.');
+    }
+    
+    // Go to payment settings
+    function goToPaymentSettings() {
+      window.location.href = 'profile-settings.html#payments';
+    }
+    
+    // Go to address settings
+    function goToAddressSettings() {
+      window.location.href = 'profile-settings.html#addresses';
+    }
+    
+    // Add touch gesture support for mobile
+    function addTouchSupport() {
+      let touchStartX = 0;
+      let touchEndX = 0;
+      
+      // Swipe to navigate between sections
+      document.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+      
+      document.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+      
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const swipeDistance = touchEndX - touchStartX;
+        
+        if (Math.abs(swipeDistance) > swipeThreshold) {
+          const currentSection = document.querySelector('.content-section.active');
+          const sections = ['orders', 'swiggy-one', 'favourites', 'payments', 'addresses'];
+          const currentIndex = sections.findIndex(section => 
+            currentSection.id === section + '-section'
+          );
+          
+          if (swipeDistance > 0 && currentIndex > 0) {
+            // Swipe right - go to previous section
+            showSection(sections[currentIndex - 1]);
+            updateNavActive(sections[currentIndex - 1]);
+          } else if (swipeDistance < 0 && currentIndex < sections.length - 1) {
+            // Swipe left - go to next section
+            showSection(sections[currentIndex + 1]);
+            updateNavActive(sections[currentIndex + 1]);
+          }
+        }
+      }
+    }
+    
+    // Update navigation active state
+    function updateNavActive(sectionName) {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Find the corresponding nav item and make it active
+      const navItems = document.querySelectorAll('.nav-item');
+      const sectionMap = {
+        'orders': 0,
+        'swiggy-one': 1,
+        'favourites': 2,
+        'payments': 3,
+        'addresses': 4
+      };
+      
+             if (sectionMap[sectionName] !== undefined) {
+         navItems[sectionMap[sectionName]].classList.add('active');
+       }
+     }
+    
+    // Logout function
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      sessionStorage.removeItem('profileUser'); // Clear session data
+      window.location.href = 'main.html';
+    }
+    
+    // Initialize profile - ZERO DELAY instant loading
+    window.onload = function() {
+      // Check authentication immediately
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Update profile info IMMEDIATELY with current user data
+      updateProfileInfo(user);
+      
+      // Load orders in background
+      setTimeout(() => loadOrders(), 0);
+      
+      // Listen for storage changes (when user data is updated from other pages)
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'user' && e.newValue) {
+          const newUser = JSON.parse(e.newValue);
+          updateProfileInfo(newUser);
+        }
+      });
+      
+      // Listen for custom profile update events
+      window.addEventListener('profileUpdated', (e) => {
+        updateProfileInfo(e.detail);
+      });
+      
+      // Update profile when page becomes visible
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          updateProfileInfo(user);
+        }
+      });
+      
+      // Update profile on focus (when user returns to tab)
+      window.addEventListener('focus', () => {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        updateProfileInfo(user);
+      });
+      
+      // Update profile on DOMContentLoaded for immediate display
+      document.addEventListener('DOMContentLoaded', () => {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        updateProfileInfo(user);
+      });
+      
+      // IMMEDIATE update when script loads
+      const immediateUser = JSON.parse(localStorage.getItem('user') || '{}');
+      if (immediateUser.name) {
+        updateProfileInfo(immediateUser);
+      }
+      
+      // Add touch support for mobile
+      addTouchSupport();
+    };
+  </script>
+
+<script>
+  window.onload = () => document.body.classList.add('loaded');
+</script>
+</body>
+</html> 

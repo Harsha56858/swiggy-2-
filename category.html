@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Category - YummyBite</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .cat-header { text-align: center; margin: 36px 0 18px 0; }
+    .cat-title { font-size: 2.1rem; font-weight: 700; color: #ff385c; margin-bottom: 8px; }
+    .cat-filters { display: flex; justify-content: center; gap: 18px; margin-bottom: 32px; }
+    .cat-filter-btn { padding: 10px 22px; border-radius: 12px; border: none; font-size: 1.08rem; font-weight: 700; background: #fff; color: #ff385c; box-shadow: 0 2px 8px rgba(255,56,92,0.10); cursor: pointer; transition: background 0.2s, color 0.2s; }
+    .cat-filter-btn.active, .cat-filter-btn:hover { background: linear-gradient(90deg, #ff385c, #ffb700); color: #fff; }
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 32px; max-width: 1100px; margin: 0 auto 48px auto; }
+    .cat-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 18px rgba(40,40,80,0.10); overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 24px 18px 18px 18px; position: relative; }
+    .cat-card img { width: 120px; height: 120px; object-fit: cover; border-radius: 16px; margin-bottom: 16px; }
+    .cat-card .cat-name { font-size: 1.15rem; font-weight: 700; color: #232323; margin-bottom: 8px; }
+    .cat-card .cat-tag { position: absolute; top: 18px; right: 18px; padding: 4px 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; color: #fff; background: #43a047; }
+    .cat-card .cat-tag.nonveg { background: #d32f2f; }
+    @media (max-width: 700px) { .cat-title { font-size: 1.3rem; } .cat-grid { gap: 12px; } }
+  </style>
+</head>
+<body>
+  <div class="cat-header">
+    <div class="cat-title" id="cat-title">Category</div>
+    <div class="cat-filters">
+      <button class="cat-filter-btn active" data-filter="all">All</button>
+      <button class="cat-filter-btn" data-filter="veg">Veg Only</button>
+      <button class="cat-filter-btn" data-filter="nonveg">Non-Veg Only</button>
+    </div>
+  </div>
+  <div class="cat-grid" id="cat-grid"></div>
+  <script>
+    // Sample data for all food categories with Unsplash images
+    const allData = {
+      Dosa: [
+        { name: 'Masala Dosa', img: 'https://apollosugar.com/wp-content/uploads/2018/12/Masala-Dosa-1024x683.jpg', type: 'veg' },
+        { name: 'Plain Dosa', img: 'https://www.awesomecuisine.com/wp-content/uploads/2009/06/Plain-Dosa.jpg', type: 'veg' },
+        { name: 'Egg Dosa', img: 'https://www.yellowthyme.com/wp-content/uploads/2024/07/Egg-Dosa-819x1024.jpg', type: 'nonveg' },
+        { name: 'Cheese Dosa', img: 'https://img.gujaratijagran.com/2023/05/cheese-dosa-1024x576.jpg', type: 'veg' },
+        { name: 'Chicken Dosa', img: 'https://th.bing.com/th/id/R.46d1553157cc0843575cc7654464a41d?rik=d5WmjujEnzxoJw&riu=http%3a%2f%2f2.bp.blogspot.com%2f-A-wvdZPvp1M%2fVWuGx7hhsgI%2fAAAAAAAALJ4%2fNcXGxa3SMy8%2fs640%2fIMG_9782.JPG&ehk=KTYtHhPfC8Y2Kin94iErEGVemAe%2bxlGt2rFFxQX%2b%2bMs%3d&risl=&pid=ImgRaw&r=0', type: 'nonveg' },
+        { name: 'Paneer Dosa', img: 'https://sdmntprwestus2.oaiusercontent.com/files/00000000-397c-61f8-bb8c-e877c7bcee52/raw?se=2025-07-18T10%3A39%3A27Z&sp=r&sv=2024-08-04&sr=b&scid=94d50f77-e4ac-536a-b6a4-fc9e7c33c16d&skoid=9ccea605-1409-4478-82eb-9c83b25dc1b0&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-07-18T09%3A36%3A36Z&ske=2025-07-19T09%3A36%3A36Z&sks=b&skv=2024-08-04&sig=9uzfs6x9ZmHIMSGB1gSHs31IbPBLXw6GmFar/%2BD07SE%3D', type: 'veg' },
+        { name: 'Onion Dosa', img: 'https://i.pinimg.com/originals/ec/cb/02/eccb02698e3b2974465d88fc57810498.jpg', type: 'veg' },
+        { name: 'Mutton Dosa', img: 'https://i0.wp.com/selfiefamily.com/wp-content/uploads/2022/05/Mutton-Kari-Dosa.png?fit=600%2C600&ssl=1', type: 'nonveg' },
+      ],
+      Biryani: [
+        { name: 'Veg Biryani', img: 'https://genv.org/wp-content/uploads/2023/02/17-Vegetable-Biryani.jpg', type: 'veg' },
+        { name: 'Chicken Biryani', img: 'https://www.whiskaffair.com/wp-content/uploads/2020/07/Chicken-Biryani-2-3.jpg', type: 'nonveg' },
+        { name: 'Mutton Biryani', img: 'https://d1mxd7n691o8sz.cloudfront.net/static/recipe/recipe/2023-03/Mutton-Biryani-Recipe-aa610f14761f45daaf16cc28861e7227_thumbnail_167947671.jpg', type: 'nonveg' },
+        { name: 'Egg Biryani', img: 'https://tse1.mm.bing.net/th/id/OIP.RRXwtnLa9ml44sGuUsJS2gHaE7?rs=1&pid=ImgDetMain&o=7&rm=3', type: 'nonveg' },
+        { name: 'Paneer Biryani', img: 'https://recipes.timesofindia.com/thumb/60042143.cms?imgsize=488634&width=800&height=800', type: 'veg' },
+      ],
+      Shawarma: [
+        { name: 'Chicken Shawarma', img: 'https://www.licious.in/blog/wp-content/uploads/2020/12/Chicken-Shawarma.jpg', type: 'nonveg' },
+        { name: 'Paneer Shawarma', img: 'https://product-assets.faasos.io/production/product/image_1565780569284_Paneer_Shawarma.jpg', type: 'veg' },
+        { name: 'Egg Shawarma', img: 'https://img.freepik.com/premium-photo/delicious-egg-shawarma-roll_1281145-601.jpg', type: 'nonveg' },
+      ],
+      Khichdi: [
+        { name: 'Oats Khichdi', img: 'https://www.funfoodfrolic.com/wp-content/uploads/2022/01/Oats-Khichdi-Blog.jpg', type: 'veg' },
+        { name: 'Dal Khichdi', img: 'https://traditionallymodernfood.com/wp-content/uploads/2023/03/khichdi-recipe-dal-khichdi-43-scaled.jpeg', type: 'veg' },
+        { name: 'Masala Khichdi', img: 'https://tse1.mm.bing.net/th/id/OIP.V7I0bLSvESLnI4pCamp7QAHaJQ?rs=1&pid=ImgDetMain&o=7&rm=3', type: 'veg' },
+      ],
+      Parotta: [
+        { name: 'Kerala Parotta', img: 'https://www.whiskaffair.com/wp-content/uploads/2020/04/Kerala-Parotta-1.jpg', type: 'veg' },
+        { name: 'Egg Parotta', img: 'https://images.slurrp.com/prod/articles/vw3gk0dzun9.webp', type: 'nonveg' },
+        { name: 'Chicken Parotta', img: 'https://i.pinimg.com/originals/28/6a/ed/286aedcacad6d3836b928133cb7e98df.jpg', type: 'nonveg' },
+      ],
+      Pizzas: [
+        { name: 'Margherita Pizza', img: 'https://cdn.loveandlemons.com/wp-content/uploads/2019/09/margherita-pizza-1080x1080.jpg', type: 'veg' },
+        { name: 'Pepperoni Pizza', img: 'https://tse2.mm.bing.net/th/id/OIP.FrQ_K-JPFHt-sx70zd5nvAHaE8?rs=1&pid=ImgDetMain&o=7&rm=3', type: 'nonveg' },
+        { name: 'Paneer Pizza', img: 'https://recipes.timesofindia.com/thumb/54699659.cms?imgsize=182442&width=800&height=800', type: 'veg' },
+        { name: 'Chicken Pizza', img: 'https://tse3.mm.bing.net/th/id/OIP.fz5QfZh2zDrrOh-YAr1JvQHaHa?rs=1&pid=ImgDetMain&o=7&rm=3', type: 'nonveg' },
+      ],
+      Burger: [
+        { name: 'Veg Burger', img: 'https://wallpapercave.com/wp/wp11267667.jpg', type: 'veg' },
+        { name: 'Chicken Burger', img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400&q=80', type: 'nonveg' },
+        { name: 'Paneer Burger', img: 'https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+      ],
+      'Ice Cream': [
+        { name: 'Vanilla Ice Cream', img: 'https://images.unsplash.com/photo-1505250469679-203ad9ced0cb?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+        { name: 'Chocolate Ice Cream', img: 'https://images.unsplash.com/photo-1505250469679-203ad9ced0cb?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+        { name: 'Strawberry Ice Cream', img: 'https://images.unsplash.com/photo-1505250469679-203ad9ced0cb?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+      ],
+      Samosa: [
+        { name: 'Veg Samosa', img: 'https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+        { name: 'Chicken Samosa', img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80', type: 'nonveg' },
+      ],
+      Idli: [
+        { name: 'Plain Idli', img: 'https://images.unsplash.com/photo-1603079841834-0c7e6e6b8c5e?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+        { name: 'Rava Idli', img: 'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+      ],
+      Paneer: [
+        { name: 'Paneer Butter Masala', img: 'https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+        { name: 'Chilli Paneer', img: 'https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+      ],
+      Noodles: [
+        { name: 'Veg Noodles', img: 'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+        { name: 'Chicken Noodles', img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80', type: 'nonveg' },
+      ],
+      Sandwich: [
+        { name: 'Veg Sandwich', img: 'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+        { name: 'Chicken Sandwich', img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80', type: 'nonveg' },
+      ],
+      Salad: [
+        { name: 'Green Salad', img: 'https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+        { name: 'Fruit Salad', img: 'https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=400&q=80', type: 'veg' },
+      ],
+    };
+    // Get category from URL
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+    const item = getQueryParam('item') || 'Dosa';
+    document.getElementById('cat-title').textContent = item + ' Varieties';
+    const data = allData[item] || [];
+    const grid = document.getElementById('cat-grid');
+    function renderGrid(filter) {
+      grid.innerHTML = '';
+      data.filter(d => filter === 'all' || d.type === filter).forEach(d => {
+        const card = document.createElement('div');
+        card.className = 'cat-card';
+        card.innerHTML = `
+          <img src="${d.img}" alt="${d.name}">
+          <div class="cat-name">${d.name}</div>
+          <div class="cat-tag ${d.type === 'veg' ? '' : 'nonveg'}">${d.type === 'veg' ? 'Veg' : 'Non-Veg'}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+    // Filter buttons
+    document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderGrid(btn.dataset.filter);
+      });
+    });
+    renderGrid('all');
+  </script>
+
+
+
+<script>
+  window.onload = () => document.body.classList.add('loaded');
+</script>
+</body>
+</html> 
